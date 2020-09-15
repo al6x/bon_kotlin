@@ -10,13 +10,13 @@ import com.google.gson.TypeAdapterFactory
 import com.google.gson.reflect.TypeToken
 import com.google.gson.stream.JsonReader
 import com.google.gson.stream.JsonWriter
-import java.io.IOException
 
 
 object Json {
   fun to_json(v: Any, pretty: Boolean = true): String {
     val builder = GsonBuilder()
     builder.registerTypeAdapterFactory(EnumTypeAdapterFactory())
+    builder.disableHtmlEscaping()
     if (pretty) builder.setPrettyPrinting()
     val gson: Gson = builder.create()
     return gson.toJson(v)

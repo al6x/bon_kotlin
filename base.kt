@@ -133,3 +133,8 @@ fun timer(start_ms: Long = System.currentTimeMillis()): () -> Long =
 fun assert(condition: Boolean, message: (() -> String) = { "Assert failed" }): Void {
   if (!condition) throw Exception(message())
 }
+
+// Constants ---------------------------------------------------------------------------------------
+val min_ms  = 60 * 1000
+val hour_ms = 60 * min_ms
+val day_ms  = 24 * hour_ms
