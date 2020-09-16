@@ -51,6 +51,11 @@ class Request (
     else                   -> null
   }
 
+  fun <T> get_string_optional(name: String, convert: (String) -> T): T? =
+    if (name in this) convert(get_string(name)) else null
+
+  operator fun contains(name: String): Boolean = (name in route_params) or (name in query) or (name in body)
+
   fun get_list_of_strings_optional(name: String): List<String>? = when {
     (name in route_params) -> route_params[name, ""].split(",")
     (name in query)        -> query[name, ""].split(",")
@@ -225,7 +230,7 @@ open class Server (
 }
 
 private data class ErrorResponse(
-  val message: String
+  val error: String
 ) {
   val is_error = true
 }
