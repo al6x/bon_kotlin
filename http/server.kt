@@ -5,7 +5,6 @@ import bon.io.Json
 import bon.thread.execute_in_parallel
 import spark.Service
 import java.util.concurrent.atomic.AtomicInteger
-import kotlin.concurrent.thread
 
 
 typealias Handler = (Request) -> Any // Result could be any object or Response
@@ -85,8 +84,13 @@ open class Server (
     log.info("started on port $port")
     http.apply {}
 
-    // Setting special call handler
-    http.post("/call", to_spark_handler(call_handler()))
+    // Setting batch call handler
+    add_call_alias("/call")
+  }
+
+  // Sometimes `/call` needs to be aliased, with something like `/api/v1/call`
+  fun add_call_alias(alias: String): Void {
+    http.post(alias, to_spark_handler(batch_call_handler()))
   }
 
   fun on(method: String, route: String, handler: Handler): Void {
@@ -101,7 +105,7 @@ open class Server (
   fun get(route: String, handler: Handler) = on("get", route, handler)
 
   // Call multiple requests in single batch
-  private fun call_handler(): Handler {
+  private fun batch_call_handler(): Handler {
     return { call_request ->
       // Creating requests
       val requests = call_request.body.get_array().map { command ->
